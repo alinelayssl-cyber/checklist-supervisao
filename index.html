@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checklist NC – Bem Família</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --g:#00b37e;--gd:#006644;--gl:#e6f9f2;
+  --r:#e03131;--rl:#fff5f5;--a:#e8890c;--al:#fff8e1;--pu:#553c9a;--pul:#f0f0ff;
+  --bg:#f0f4f3;--w:#fff;--tx:#1a2e2a;--ts:#4a6b60;--bd:#c8ddd7;
+  --sh:0 4px 24px rgba(0,0,0,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;}
+header{background:linear-gradient(135deg,#006644,#009966,#00b37e);padding:26px 20px 30px;text-align:center;position:relative;overflow:hidden;}
+header::before{content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;background:rgba(255,255,255,.05);border-radius:50%;}
+header::after{content:'';position:absolute;bottom:-50px;left:-30px;width:150px;height:150px;background:rgba(255,255,255,.04);border-radius:50%;}
+.htag{display:inline-block;background:rgba(255,255,255,.18);color:#fff;font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:3px 12px;border-radius:20px;margin-bottom:8px;font-family:'JetBrains Mono',monospace;}
+header h1{color:#fff;font-size:20px;font-weight:700;line-height:1.3;position:relative;z-index:1;}
+header p{color:rgba(255,255,255,.75);font-size:12px;margin-top:6px;position:relative;z-index:1;}
+.data-badge{display:inline-block;background:rgba(255,255,255,.18);color:#fff;font-size:11px;font-family:'JetBrains Mono',monospace;padding:4px 14px;border-radius:20px;margin-top:10px;position:relative;z-index:1;}
+.sync-bar{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;font-size:11px;font-family:'JetBrains Mono',monospace;background:var(--gd);color:#fff;}
+.sync-bar.offline{background:#c0392b;}.sync-bar.syncing{background:#e67e22;}.sync-bar.erro{background:#8e1a1a;}
+.sync-l{display:flex;align-items:center;gap:7px;}
+.sdot{width:7px;height:7px;border-radius:50%;background:#2ecc71;flex-shrink:0;}
+.sync-bar.offline .sdot{background:#ff7675;}.sync-bar.syncing .sdot,.sync-bar.erro .sdot{background:#fdcb6e;animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.btn-sync{padding:4px 12px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:6px;color:#fff;font-size:10px;cursor:pointer;font-family:'Sora',monospace;transition:all .2s;}
+.btn-sync:hover{background:rgba(255,255,255,.28);}
+.prog-wrap{background:#d4ede6;height:4px;}
+.prog-bar{height:4px;background:var(--g);transition:width .4s;}
+.steps{display:flex;justify-content:center;align-items:center;padding:14px 20px;background:#fff;border-bottom:1px solid var(--bd);}
+.sdot2{width:26px;height:26px;border-radius:50%;background:#e2ecea;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#8aaa9f;transition:all .3s;flex-shrink:0;}
+.sdot2.active{background:var(--g);color:#fff;box-shadow:0 0 0 4px rgba(0,179,126,.2);}.sdot2.done{background:var(--gd);color:#fff;}
+.sline{flex:1;height:2px;background:#e2ecea;transition:background .3s;max-width:48px;}.sline.done{background:var(--g);}
+main{padding:16px 16px 80px;max-width:600px;margin:0 auto;}
+.page{display:none;}.page.active{display:block;animation:fu .3s ease;}
+@keyframes fu{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.sec-t{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--ts);margin-bottom:12px;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;gap:8px;}
+.sec-t::after{content:'';flex:1;height:1px;background:var(--bd);}
+.card{background:var(--w);border-radius:16px;padding:18px;margin-bottom:14px;box-shadow:var(--sh);border:1px solid rgba(200,221,215,.5);}
+.fl{display:block;font-size:13px;font-weight:600;color:var(--tx);margin-bottom:8px;}
+.req{color:var(--r);}
+select,input[type="text"],input[type="date"]{width:100%;padding:11px 15px;border:1.5px solid var(--bd);border-radius:10px;font-family:'Sora',sans-serif;font-size:14px;color:var(--tx);background:#f8fbfa;appearance:none;transition:border-color .2s,box-shadow .2s;}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='%2300b37e' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-size:16px;padding-right:34px;cursor:pointer;}
+select:focus,input:focus{outline:none;border-color:var(--g);box-shadow:0 0 0 3px rgba(0,179,126,.15);}
+.rg{display:flex;flex-direction:column;gap:7px;}
+.ro{display:flex;align-items:center;gap:11px;padding:11px 13px;border:1.5px solid var(--bd);border-radius:10px;cursor:pointer;transition:all .2s;background:#f8fbfa;}
+.ro:hover{border-color:var(--g);background:var(--gl);}
+.ro input{display:none;}
+.rdot{width:17px;height:17px;border-radius:50%;border:2px solid var(--bd);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.ro.selected{border-color:var(--g);background:var(--gl);}
+.ro.selected .rdot{border-color:var(--g);background:var(--g);}
+.ro.selected .rdot::after{content:'';width:6px;height:6px;border-radius:50%;background:#fff;}
+.rl2{font-size:13px;color:var(--tx);}
+.proc-card{background:var(--w);border-radius:14px;margin-bottom:12px;box-shadow:var(--sh);border:1px solid rgba(200,221,215,.5);overflow:hidden;}
+.proc-head{padding:14px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.proc-nome{display:flex;align-items:center;gap:9px;font-weight:700;font-size:14px;}
+.proc-body{border-top:1px solid #eef3f1;padding:14px 16px;display:none;}
+.proc-body.open{display:block;}
+textarea{width:100%;padding:11px 14px;border:1.5px solid var(--bd);border-radius:10px;font-family:'Sora',sans-serif;font-size:13px;color:var(--tx);resize:vertical;min-height:80px;background:#f8fbfa;transition:border-color .2s;}
+textarea:focus{outline:none;border-color:var(--g);box-shadow:0 0 0 3px rgba(0,179,126,.15);}
+textarea::placeholder{color:#a0b8b2;}
+.sev-row{display:flex;gap:7px;margin-bottom:10px;}
+.sev-btn{flex:1;padding:8px 4px;border:1.5px solid var(--bd);border-radius:9px;background:#f8fbfa;cursor:pointer;text-align:center;font-family:'Sora',sans-serif;font-size:11px;font-weight:600;transition:all .2s;color:var(--ts);}
+.sev-btn em{font-size:15px;display:block;margin-bottom:3px;font-style:normal;}
+.sel-baixa{border-color:#48bb78;background:#f0fff4;color:#276749;}
+.sel-media{border-color:#ed8936;background:#fffaf0;color:#7b341e;}
+.sel-alta{border-color:#e53e3e;background:#fff5f5;color:#822727;}
+.chip-row{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px;}
+.chip{padding:5px 12px;border:1.5px solid var(--bd);border-radius:20px;font-size:11px;cursor:pointer;transition:all .2s;background:#f8fbfa;color:var(--ts);font-weight:500;}
+.chip.on{background:var(--gl);border-color:var(--g);color:var(--gd);}
+.btn-row{display:flex;gap:10px;margin-top:20px;}
+.btn-back{padding:12px 20px;border:1.5px solid var(--bd);border-radius:12px;background:#fff;font-family:'Sora',sans-serif;font-size:13px;font-weight:600;color:var(--ts);cursor:pointer;transition:all .2s;}
+.btn-back:hover{border-color:var(--g);color:var(--g);}
+.btn-next{flex:1;padding:13px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--g),var(--gd));font-family:'Sora',sans-serif;font-size:14px;font-weight:700;color:#fff;cursor:pointer;transition:all .2s;box-shadow:0 4px 14px rgba(0,153,102,.3);}
+.btn-next:hover{transform:translateY(-1px);}
+.btn-next:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+.rv-item{display:flex;justify-content:space-between;align-items:flex-start;padding:10px 0;border-bottom:1px solid #eef3f1;gap:10px;}
+.rv-item:last-child{border-bottom:none;}
+.rk{font-size:11px;font-weight:600;color:var(--ts);text-transform:uppercase;letter-spacing:.5px;flex-shrink:0;min-width:110px;}
+.rv{font-size:13px;color:var(--tx);text-align:right;font-weight:500;}
+.sview{text-align:center;padding:28px 16px 16px;}
+.sico{width:72px;height:72px;border-radius:50%;background:var(--gl);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:32px;animation:pop .5s ease;}
+@keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.15)}100%{transform:scale(1)}}
+.sview h2{font-size:20px;font-weight:700;color:var(--gd);margin-bottom:8px;}
+.sview p{font-size:13px;color:var(--ts);line-height:1.6;}
+.btn-novo{display:inline-flex;align-items:center;gap:8px;margin-top:20px;padding:13px 26px;background:linear-gradient(135deg,var(--g),var(--gd));border:none;border-radius:13px;color:#fff;font-family:'Sora',sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(0,153,102,.3);transition:all .2s;}
+/* HISTÓRICO */
+.hcard{background:var(--w);border-radius:14px;margin-bottom:12px;box-shadow:var(--sh);border:1px solid rgba(200,221,215,.5);overflow:hidden;}
+.hhead{padding:13px 16px;cursor:pointer;transition:background .15s;display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+.hhead:hover{background:#f8fbfa;}
+.hmeta{font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--ts);margin-bottom:3px;}
+.htitle{font-size:13px;font-weight:700;color:var(--tx);}
+.htags{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px;}
+.htag2{padding:2px 9px;border-radius:16px;font-size:10px;font-weight:600;font-family:'JetBrains Mono',monospace;}
+.ht-nc{background:#fff0f0;color:#c53030;}.ht-ok{background:#e6f9f2;color:#276749;}
+.ht-pend{background:#fff0f0;color:#c53030;}.ht-and{background:#fff8e1;color:#744210;}
+.ht-res{background:#e6f9f2;color:#276749;}.ht-venc{background:#f0f0ff;color:#553c9a;}
+.ht-off{background:#fff8e1;color:#744210;}
+.hbody{border-top:1px solid #eef3f1;padding:12px 16px;display:none;}
+.hbody.open{display:block;}
+.nc-item{border-radius:11px;padding:12px 13px;margin-bottom:10px;border-left:4px solid var(--r);background:#fff8f8;}
+.nc-item-id{font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--g);font-weight:600;margin-bottom:2px;}
+.nc-item-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:4px;flex-wrap:wrap;}
+.nc-item-setor{font-size:13px;font-weight:700;}
+.nc-item-desc{font-size:12px;color:var(--ts);line-height:1.4;margin-bottom:8px;}
+.trat-blk{border-radius:9px;padding:10px 12px;margin-top:6px;}
+.trat-blk.res{background:#e6f9f2;border:1px solid #a8dfc8;}
+.trat-blk.and{background:#fff8e1;border:1px solid #f6d860;}
+.trat-blk.pend{background:#fff0f0;border:1px dashed #fecaca;}
+.trat-blk.venc{background:#f0f0ff;border:1px solid #c5b8f7;}
+.tbl{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;font-family:'JetBrains Mono',monospace;margin-bottom:7px;}
+.trat-blk.res .tbl{color:var(--gd);}.trat-blk.and .tbl{color:#744210;}
+.trat-blk.pend .tbl{color:#c53030;}.trat-blk.venc .tbl{color:var(--pu);}
+.trat-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:6px;}
+.ti .til{font-size:9px;color:var(--ts);font-family:'JetBrains Mono',monospace;text-transform:uppercase;margin-bottom:2px;}
+.ti .tiv{font-size:12px;font-weight:600;color:var(--tx);}
+.trat-txt{font-size:12px;color:var(--ts);line-height:1.5;padding-top:6px;border-top:1px dashed var(--bd);}
+.aguard{padding:8px 12px;background:#f8fbfa;border:1px dashed var(--bd);border-radius:9px;font-size:12px;color:var(--ts);display:flex;align-items:center;gap:6px;margin-top:6px;}
+.spin{width:24px;height:24px;border:3px solid var(--bd);border-top-color:var(--g);border-radius:50%;animation:spin .7s linear infinite;margin:16px auto;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.emsg{background:#fff5f5;border:1px solid #fed7d7;border-radius:9px;padding:9px 13px;font-size:12px;color:#c53030;margin-top:8px;display:none;align-items:center;gap:5px;}
+.emsg.show{display:flex;}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--gd);color:#fff;padding:10px 22px;border-radius:12px;font-size:13px;font-weight:600;box-shadow:0 6px 20px rgba(0,0,0,.2);transition:transform .3s;z-index:999;white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);}.toast.err{background:var(--r);}
+.badge-sev{padding:2px 8px;border-radius:14px;font-size:10px;font-weight:600;font-family:'JetBrains Mono',monospace;}
+.bs-alta{background:#fff0f0;color:#c53030;}.bs-media{background:#fff8e1;color:#744210;}.bs-baixa{background:#e6f9f2;color:#276749;}
+.badge-st{padding:2px 8px;border-radius:14px;font-size:10px;font-weight:600;font-family:'JetBrains Mono',monospace;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="htag">Bem Família · Supervisão de Unidades</div>
+  <h1>Checklist Diário de<br>Não Conformidade</h1>
+  <p>Registro, rastreabilidade e tratativa em tempo real</p>
+  <div class="data-badge" id="dataBadge">─</div>
+</header>
+
+<div class="sync-bar" id="syncBar">
+  <div class="sync-l"><div class="sdot"></div><span id="syncMsg">Verificando conexão...</span></div>
+  <button class="btn-sync" onclick="atualizarHistorico()">↻ Atualizar</button>
+</div>
+
+<div class="prog-wrap"><div class="prog-bar" id="progBar"></div></div>
+
+<div class="steps">
+  <div class="sdot2 active" id="s1">1</div><div class="sline" id="l1"></div>
+  <div class="sdot2" id="s2">2</div><div class="sline" id="l2"></div>
+  <div class="sdot2" id="s3">3</div><div class="sline" id="l3"></div>
+  <div class="sdot2" id="s4">✓</div>
+</div>
+
+<main>
+<!-- P1 -->
+<div class="page active" id="page1">
+  <div class="sec-t">Identificação</div>
+  <div class="card">
+    <label class="fl">Unidade <span class="req">*</span></label>
+    <select id="unidade">
+      <option value="">Selecione...</option>
+      <option>Guajajaras</option><option>Cohab</option><option>Turu</option>
+      <option>Maiobão</option><option>Centro</option><option>João Paulo</option>
+      <option>Tropical</option><option>Anjo da Guarda</option><option>Aracagy</option>
+    </select>
+    <div class="emsg" id="e-u">⚠ Selecione a unidade.</div>
+  </div>
+  <div class="card">
+    <label class="fl">Supervisor(a) <span class="req">*</span></label>
+    <input type="text" id="supervisor" placeholder="Nome completo" />
+    <div class="emsg" id="e-s">⚠ Informe o nome.</div>
+  </div>
+  <div class="card">
+    <label class="fl">Data <span class="req">*</span></label>
+    <input type="date" id="dataReg" />
+  </div>
+  <div class="card">
+    <label class="fl">Turno <span class="req">*</span></label>
+    <div class="rg">
+      <label class="ro" onclick="selRad(this,'turno')"><input type="radio"><div class="rdot"></div><span class="rl2">🌅 Manhã</span></label>
+      <label class="ro" onclick="selRad(this,'turno')"><input type="radio"><div class="rdot"></div><span class="rl2">☀️ Tarde</span></label>
+      <label class="ro" onclick="selRad(this,'turno')"><input type="radio"><div class="rdot"></div><span class="rl2">🌙 Noite</span></label>
+      <label class="ro" onclick="selRad(this,'turno')"><input type="radio"><div class="rdot"></div><span class="rl2">⏱ Integral</span></label>
+    </div>
+    <div class="emsg" id="e-t">⚠ Selecione o turno.</div>
+  </div>
+  <div class="btn-row"><button class="btn-next" onclick="go(2)">Próximo →</button></div>
+</div>
+
+<!-- P2 -->
+<div class="page" id="page2">
+  <div class="sec-t">Processos Avaliados</div>
+  <p style="font-size:13px;color:var(--ts);margin-bottom:14px;">Avalie cada processo. ✅ Conforme ou ❌ Não Conforme.</p>
+  <div id="procContainer"></div>
+  <div class="btn-row">
+    <button class="btn-back" onclick="go(1)">← Voltar</button>
+    <button class="btn-next" onclick="go(3)">Próximo →</button>
+  </div>
+</div>
+
+<!-- P3 -->
+<div class="page" id="page3">
+  <div class="sec-t">Revisão Final</div>
+  <div class="card" id="reviewBox"></div>
+  <div class="card">
+    <label class="fl">Observações Gerais</label>
+    <textarea id="obsGeral" placeholder="Observações adicionais..."></textarea>
+  </div>
+  <div class="btn-row">
+    <button class="btn-back" onclick="go(2)">← Voltar</button>
+    <button class="btn-next" id="btnEnviar" onclick="enviar()">✓ Registrar</button>
+  </div>
+</div>
+
+<!-- P4 -->
+<div class="page" id="page4">
+  <div class="sview">
+    <div class="sico" id="si">✅</div>
+    <h2 id="sTitle">Registrado!</h2>
+    <p id="sMsg">Checklist enviado com sucesso.</p>
+    <button class="btn-novo" onclick="novoReg()">＋ Novo Registro</button>
+  </div>
+  <div id="histWrap" style="margin-top:22px;">
+    <div class="sec-t">Registros Recentes & Tratativas</div>
+    <div id="histList"><div class="spin"></div></div>
+  </div>
+</div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  CONFIG — URL única para todos os 3 apps
+// ═══════════════════════════════════════════════════════
+const API = 'https://script.google.com/macros/s/AKfycbz_PUN5kAWcrfaMwMepuEOf9EBwLwKhLPGiN93jjTWnPhrZM-Oj43lhz33tBMnhrroL/exec';
+
+// ── chamada GET segura ────────────────────────────────
+// redirect:'follow' garante que o 302 do GAS seja seguido antes do .json()
+async function apiGet(params) {
+  const qs = Object.entries(params).map(([k,v]) => k+'='+encodeURIComponent(v)).join('&');
+  const url = API + '?' + qs + '&t=' + Date.now();
+  console.log('[API] GET', url.replace(API,'[API]'));
+  const resp = await fetch(url, { redirect: 'follow' });
+  console.log('[API] status', resp.status, resp.url.includes('script.google')? 'GAS':'redirect');
+  const text = await resp.text();
+  console.log('[API] body', text.slice(0,200));
+  try {
+    return JSON.parse(text);
+  } catch(e) {
+    console.error('[API] parse error — body não é JSON:', text.slice(0,300));
+    throw new Error('Resposta inválida da API');
+  }
+}
+
+// ── "POST" via GET com payload base64 ─────────────────
+async function apiSend(acao, payload) {
+  console.log('[apiSend] acao='+acao, payload);
+  const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+  const resultado = await apiGet({ acao, data: b64 });
+  console.log('[apiSend] resultado', resultado);
+  return resultado;
+}
+
+const PROCESSOS = [
+  {id:'comercial', nome:'Comercial',          icon:'🛒'},
+  {id:'medico',    nome:'Parte Médica',        icon:'🩺'},
+  {id:'qualidade', nome:'Qualidade',           icon:'⭐'},
+  {id:'processos', nome:'Processos e Sistema', icon:'⚙️'},
+  {id:'financeiro',nome:'Financeiro',          icon:'💰'},
+  {id:'callcenter',nome:'Call Center',         icon:'📞'},
+  {id:'outro',     nome:'Outro',               icon:'📝'},
+];
+const ACOES_CHIPS = ['Comunicado à equipe','Treinamento realizado','Correção imediata','Aguardando resolução','Escalado para gestão','Registrado em ata'];
+const SNOMES = {comercial:'🛒 Comercial',medico:'🩺 Parte Médica',qualidade:'⭐ Qualidade',processos:'⚙️ Processos e Sistema',financeiro:'💰 Financeiro',callcenter:'📞 Call Center',outro:'📝 Outro'};
+const ST = {
+  resolvido:   {txt:'✅ Resolvido',          cls:'res', bg:'#e6f9f2',cor:'#276749'},
+  em_andamento:{txt:'⏳ Em andamento',        cls:'and', bg:'#fff8e1',cor:'#744210'},
+  em_tratativa:{txt:'🔄 Em tratativa',        cls:'and', bg:'#fff8e1',cor:'#744210'},
+  escalado:    {txt:'🔺 Escalado p/ gestão',  cls:'venc',bg:'#f0f0ff',cor:'#553c9a'},
+  pendente:    {txt:'❌ Pendente',             cls:'pend',bg:'#fff0f0',cor:'#c53030'},
+  vencido:     {txt:'⚠️ Vencido',             cls:'venc',bg:'#f0f0ff',cor:'#553c9a'},
+};
+
+// ── helpers de formatação — robustos contra Invalid Date ──
+function parseDateSafe(v) {
+  if(!v || v === 'null' || v === 'undefined') return null;
+  const s = String(v).trim();
+  if(!s) return null;
+  if(/^\d{10,}$/.test(s)) { const d=new Date(Number(s)); return isNaN(d)?null:d; }
+  if(/^\d{4}-\d{2}-\d{2}/.test(s)) {
+    const iso = s.length===10 ? s+'T12:00:00' : s;
+    const d=new Date(iso); return isNaN(d)?null:d;
+  }
+  const m1 = s.match(/^(\d{2})\/(\d{2})\/(\d{4})(?:[\sT](\d{2}):(\d{2}))?/);
+  if(m1) {
+    const [,dd,mm,yyyy,hh='12',mi='00'] = m1;
+    const d = new Date(`${yyyy}-${mm}-${dd}T${hh}:${mi}:00`);
+    return isNaN(d)?null:d;
+  }
+  const d=new Date(s); return isNaN(d)?null:d;
+}
+function fmtData(v) {
+  const d = parseDateSafe(v);
+  if(!d) return 'Data não informada';
+  return d.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit', year:'numeric'});
+}
+function fmtHora(v) {
+  const d = parseDateSafe(v);
+  if(!d) return 'Data não informada';
+  return d.toLocaleString('pt-BR', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'});
+}
+function hoje2(){ return new Date().toISOString().split('T')[0]; }
+
+let procStatus={}, curPage=1;
+let pendQueue=JSON.parse(localStorage.getItem('bf_q4')||'[]');
+let online=navigator.onLine;
+
+document.addEventListener('DOMContentLoaded',()=>{
+  const hoje=new Date().toISOString().split('T')[0];
+  document.getElementById('dataReg').value=hoje;
+  atualizarBadge(hoje);
+  buildProcs();
+  testarConexao();
+  tentarFila();
+  setInterval(tentarFila,30000);
+});
+window.addEventListener('online', ()=>{online=true;  testarConexao(); tentarFila();});
+window.addEventListener('offline',()=>{online=false; setSyncBar('offline');});
+document.getElementById('dataReg').addEventListener('change',e=>atualizarBadge(e.target.value));
+
+function atualizarBadge(v){
+  if(!v) return;
+  document.getElementById('dataBadge').textContent=new Date(v+'T12:00:00').toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+}
+
+async function testarConexao(){
+  setSyncBar('syncing','Testando conexão...');
+  try{
+    const d=await apiGet({acao:'listar',perfil:'master',senha:'BF@Master2024'});
+    if(d.ok) setSyncBar('online');
+    else setSyncBar('erro','API respondeu: '+d.msg);
+  }catch(e){
+    setSyncBar('offline','Sem conexão com a API');
+  }
+}
+
+function setSyncBar(s,m){
+  const b=document.getElementById('syncBar'), msg=document.getElementById('syncMsg');
+  b.className='sync-bar'+(s==='offline'?' offline':s==='syncing'?' syncing':s==='erro'?' erro':'');
+  if(m){msg.textContent=m; return;}
+  if(s==='online') msg.textContent='Conectado · Google Sheets';
+  else if(s==='offline') msg.textContent='Sem internet · registros serão enviados ao reconectar';
+  else if(s==='syncing') msg.textContent='Sincronizando...';
+}
+
+function buildProcs(){
+  const c=document.getElementById('procContainer'); c.innerHTML='';
+  PROCESSOS.forEach(p=>{
+    procStatus[p.id]={status:null,severidade:null,descricao:'',acoes:[],outroDesc:''};
+    const div=document.createElement('div'); div.className='proc-card';
+    div.innerHTML=`
+      <div class="proc-head">
+        <div class="proc-nome"><span>${p.icon}</span><span>${p.nome}</span></div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap;">
+          ${p.id==='outro'?`
+            <label class="ro" style="padding:7px 12px" onclick="setProc('${p.id}','outro',this)"><input type="radio"><div class="rdot"></div><span class="rl2" style="font-size:12px">📝 Registrar</span></label>
+          `:`
+            <label class="ro" style="padding:7px 12px" onclick="setProc('${p.id}','conforme',this)"><input type="radio"><div class="rdot"></div><span class="rl2" style="font-size:12px;color:#276749;font-weight:600">✅</span></label>
+            <label class="ro" style="padding:7px 12px" onclick="setProc('${p.id}','nao_conforme',this)"><input type="radio"><div class="rdot"></div><span class="rl2" style="font-size:12px;color:#c53030;font-weight:600">❌</span></label>
+          `}
+        </div>
+      </div>
+      <div class="proc-body" id="pb-${p.id}">
+        ${p.id==='outro'?`<label class="fl" style="margin-top:0">Processo/Área<span class="req"> *</span></label><input type="text" id="op-${p.id}" placeholder="Ex: RH, TI..." style="margin-bottom:10px">`:''}
+        <label class="fl" style="margin-top:0">Descrição<span class="req"> *</span></label>
+        <textarea id="desc-${p.id}" placeholder="Descreva a não conformidade..." style="margin-bottom:10px"></textarea>
+        <label class="fl">Severidade</label>
+        <div class="sev-row" style="margin-bottom:10px">
+          <button class="sev-btn" onclick="setSev('${p.id}','Baixa',this)"><em>🟢</em>Baixa</button>
+          <button class="sev-btn" onclick="setSev('${p.id}','Média',this)"><em>🟡</em>Média</button>
+          <button class="sev-btn" onclick="setSev('${p.id}','Alta',this)"><em>🔴</em>Alta</button>
+        </div>
+        <label class="fl">Ações Imediatas</label>
+        <div class="chip-row" id="chips-${p.id}">
+          ${ACOES_CHIPS.map(a=>`<span class="chip" onclick="toggleChip('${p.id}','${a}',this)">${a}</span>`).join('')}
+        </div>
+      </div>`;
+    c.appendChild(div);
+  });
+}
+
+function setProc(id,st,el){
+  procStatus[id].status=st;
+  el.closest('.proc-head').querySelectorAll('.ro').forEach(r=>r.classList.remove('selected'));
+  el.classList.add('selected');
+  const b=document.getElementById('pb-'+id);
+  st==='conforme'?b.classList.remove('open'):b.classList.add('open');
+}
+function setSev(id,v,btn){
+  procStatus[id].severidade=v;
+  btn.closest('.sev-row').querySelectorAll('.sev-btn').forEach(b=>{b.className='sev-btn';});
+  btn.classList.add('sel-'+v.toLowerCase());
+}
+function toggleChip(id,a,el){
+  el.classList.toggle('on');
+  const arr=procStatus[id].acoes, i=arr.indexOf(a);
+  i>-1?arr.splice(i,1):arr.push(a);
+}
+function selRad(el,g){
+  document.querySelectorAll(`[onclick*="'${g}'"]`).forEach(e=>e.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function showE(id,show){document.getElementById(id).classList.toggle('show',show);}
+
+function go(n){
+  if(n>curPage&&!validar(curPage)) return;
+  curPage=n;
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page'+n).classList.add('active');
+  steps(n); window.scrollTo({top:0,behavior:'smooth'});
+  if(n===3) buildReview();
+  if(n===4) atualizarHistorico();
+}
+function steps(n){
+  document.getElementById('progBar').style.width=((n-1)/3*100)+'%';
+  for(let i=1;i<=4;i++){
+    const d=document.getElementById('s'+i); if(!d) continue;
+    d.classList.remove('active','done');
+    if(i<n) d.classList.add('done'); else if(i===n) d.classList.add('active');
+    if(i<4){const l=document.getElementById('l'+i);if(l) l.classList.toggle('done',i<n);}
+  }
+}
+function validar(n){
+  if(n===1){
+    const u=document.getElementById('unidade').value;
+    const s=document.getElementById('supervisor').value.trim();
+    const t=document.querySelector('[onclick*="turno"].selected');
+    showE('e-u',!u); showE('e-s',!s); showE('e-t',!t);
+    return !!(u&&s&&t);
+  }
+  if(n===2){
+    const q=Object.values(procStatus).some(s=>s.status!==null);
+    if(!q){showToast('⚠ Avalie pelo menos um processo.');return false;}
+    let ok=true;
+    PROCESSOS.forEach(p=>{
+      const s=procStatus[p.id];
+      if(s.status==='nao_conforme'||s.status==='outro'){
+        const d=document.getElementById('desc-'+p.id)?.value?.trim();
+        if(!d) ok=false; else s.descricao=d;
+        if(p.id==='outro') s.outroDesc=document.getElementById('op-'+p.id)?.value?.trim()||'';
+      }
+    });
+    if(!ok){showToast('⚠ Preencha a descrição de todas as NCs.');return false;}
+    return true;
+  }
+  return true;
+}
+function buildReview(){
+  const tEl=document.querySelector('[onclick*="turno"].selected .rl2');
+  const data=document.getElementById('dataReg').value;
+  let h=`
+    <div class="rv-item"><span class="rk">Unidade</span><span class="rv">${document.getElementById('unidade').value}</span></div>
+    <div class="rv-item"><span class="rk">Supervisor(a)</span><span class="rv">${document.getElementById('supervisor').value}</span></div>
+    <div class="rv-item"><span class="rk">Data</span><span class="rv">${data?new Date(data+'T12:00:00').toLocaleDateString('pt-BR'):'–'}</span></div>
+    <div class="rv-item"><span class="rk">Turno</span><span class="rv">${tEl?tEl.textContent:'–'}</span></div>`;
+  PROCESSOS.forEach(p=>{
+    const s=procStatus[p.id]; if(!s||s.status===null) return;
+    const lbl=s.status==='conforme'?'✅ Conforme':s.status==='nao_conforme'?'❌ Não Conforme':'📝 Outro';
+    h+=`<div class="rv-item"><span class="rk">${p.icon} ${p.nome}</span><span class="rv">${lbl}${s.descricao?`<br><span style="font-size:11px;color:var(--ts)">${s.descricao}</span>`:''}</span></div>`;
+  });
+  document.getElementById('reviewBox').innerHTML=h;
+}
+
+async function enviar(){
+  const btn=document.getElementById('btnEnviar');
+  btn.disabled=true; btn.textContent='⏳ Enviando...';
+  const tEl=document.querySelector('[onclick*="turno"].selected .rl2');
+  const checklistId='CK-'+Date.now();
+  const ncs=PROCESSOS.filter(p=>procStatus[p.id]?.status==='nao_conforme'||procStatus[p.id]?.status==='outro');
+  const payload={
+    checklist_id:checklistId, timestamp:new Date().toISOString(),
+    unidade:document.getElementById('unidade').value,
+    supervisor:document.getElementById('supervisor').value,
+    data:document.getElementById('dataReg').value,
+    turno:tEl?tEl.textContent.trim():'',
+    processos:JSON.parse(JSON.stringify(procStatus)),
+    obsGeral:document.getElementById('obsGeral').value,
+    totalNc:ncs.length,
+  };
+  let enviado=false, ncIds=[];
+  // Sempre re-testa conectividade real antes de tentar enviar
+  const conectado = navigator.onLine;
+  console.log('[enviar] navigator.onLine='+conectado, 'payload:', payload);
+  if(conectado){
+    try{
+      const d=await apiSend('salvar_checklist',payload);
+      console.log('[enviar] resposta da API:', d);
+      if(d.ok){
+        enviado=true;
+        ncIds=d.nc_ids||[];
+        console.log('[enviar] ✅ sucesso, nc_ids:', ncIds);
+      } else {
+        throw new Error(d.msg||'API retornou ok:false');
+      }
+    }catch(e){
+      console.warn('[enviar] ⚠ falhou, adicionando à fila:', e.message);
+      pendQueue.push(payload);
+      localStorage.setItem('bf_q4',JSON.stringify(pendQueue));
+      showToast('⚠ Salvo localmente. Será enviado ao reconectar.',true);
+    }
+  } else {
+    console.log('[enviar] offline — adicionando à fila');
+    pendQueue.push(payload);
+    localStorage.setItem('bf_q4',JSON.stringify(pendQueue));
+  }
+  // Salvar no histórico — enviado=true já atualiza o badge
+  const hist=JSON.parse(localStorage.getItem('bf_hist4')||'[]');
+  hist.unshift({...payload, enviado, nc_ids:ncIds});
+  if(hist.length>30) hist.splice(30);
+  localStorage.setItem('bf_hist4',JSON.stringify(hist));
+  btn.disabled=false; btn.textContent='✓ Registrar';
+  document.getElementById('si').textContent=enviado?'✅':'📦';
+  document.getElementById('sTitle').textContent=enviado?'Registrado!':'Salvo localmente';
+  document.getElementById('sMsg').innerHTML=enviado
+    ?`${ncs.length>0?`<strong>${ncs.length}</strong> NC(s) registrada(s) com ID único. `:''}Dados no Google Sheets.`
+    :`Sem internet. Será enviado automaticamente ao reconectar.`;
+  go(4);
+}
+
+async function tentarFila(){
+  if(!navigator.onLine) { console.log('[fila] offline, abortando'); return; }
+  if(pendQueue.length===0) { console.log('[fila] fila vazia'); return; }
+  console.log('[fila] tentando enviar '+pendQueue.length+' item(s)');
+  setSyncBar('syncing','Sincronizando '+pendQueue.length+' registro(s)...');
+  const fila=[...pendQueue];
+  let enviados=0;
+  for(const item of fila){
+    try{
+      console.log('[fila] enviando', item.checklist_id);
+      const d=await apiSend('salvar_checklist',item);
+      console.log('[fila] resposta', d);
+      if(d.ok){
+        // Remove da fila
+        pendQueue=pendQueue.filter(q=>q.checklist_id!==item.checklist_id);
+        // Atualiza histórico local: marca como enviado
+        const hist=JSON.parse(localStorage.getItem('bf_hist4')||'[]');
+        const idx=hist.findIndex(h=>h.checklist_id===item.checklist_id);
+        if(idx>=0){
+          hist[idx].enviado=true;
+          hist[idx].nc_ids=d.nc_ids||[];
+          localStorage.setItem('bf_hist4',JSON.stringify(hist));
+          console.log('[fila] ✅ histórico atualizado para',item.checklist_id);
+        }
+        enviados++;
+      } else {
+        console.warn('[fila] API retornou erro:', d.msg);
+        break;
+      }
+    }catch(e){
+      console.error('[fila] exceção:', e.message);
+      break;
+    }
+  }
+  localStorage.setItem('bf_q4',JSON.stringify(pendQueue));
+  console.log('[fila] concluído. enviados='+enviados+' restantes='+pendQueue.length);
+  setSyncBar('online', enviados>0
+    ? 'Conectado · '+enviados+' registro(s) sincronizado(s)'
+    : 'Conectado · Google Sheets');
+}
+
+async function atualizarHistorico(){
+  const el=document.getElementById('histList'); if(!el) return;
+  el.innerHTML='<div class="spin"></div>';
+  // Drena fila antes de renderizar
+  await tentarFila();
+  const hist=JSON.parse(localStorage.getItem('bf_hist4')||'[]');
+  if(!hist.length){
+    el.innerHTML='<p style="font-size:13px;color:var(--ts);text-align:center;padding:20px">Nenhum registro ainda.</p>';
+    return;
+  }
+  // Busca dados atualizados do servidor (NCs + tratativas)
+  let tratMap={}, checklistNcsMap={};
+  if(navigator.onLine){
+    try{
+      const d=await apiGet({acao:'listar',perfil:'master',senha:'BF@Master2024'});
+      console.log('[hist] servidor retornou', d.ok, 'ncs='+d.ncs?.length, 'trats='+d.tratativas?.length);
+      if(d.ok){
+        (d.tratativas||[]).forEach(t=>{ tratMap[String(t.NC_ID)]=t; });
+        (d.ncs||[]).forEach(n=>{
+          const cid=String(n.Checklist_ID);
+          if(!checklistNcsMap[cid]) checklistNcsMap[cid]=[];
+          checklistNcsMap[cid].push(n);
+        });
+      }
+    }catch(e){ console.warn('[hist] falha ao buscar do servidor:', e.message); }
+  }
+
+  el.innerHTML=hist.slice(0,15).map(r=>{
+    const d=r.data?fmtData(r.data):'–';
+    const nc=r.totalNc||0;
+    const ncsDoChk=checklistNcsMap[r.checklist_id]||[];
+    // Badge enviado: considera enviado se aparece no servidor
+    const enviado = r.enviado || ncsDoChk.length > 0 ||
+      (nc===0 && r.enviado!==false); // sem NCs: assume enviado se não foi explicitamente falso
+    // Atualiza flag local silenciosamente
+    if(!r.enviado && ncsDoChk.length>0){ r.enviado=true; }
+
+    let tags = nc>0
+      ? `<span class="htag2 ht-nc">❌ ${nc} NC(s)</span>`
+      : `<span class="htag2 ht-ok">✅ Sem NCs</span>`;
+    tags += enviado
+      ? `<span class="htag2 ht-res">✓ Enviado</span>`
+      : `<span class="htag2 ht-off">📦 Pendente envio</span>`;
+
+    // Constrói o corpo com NCs e tratativas completas
+    let corpo='';
+    if(ncsDoChk.length>0){
+      ncsDoChk.forEach(n=>{
+        const t     = tratMap[String(n.NC_ID)];
+        const stCfg = t ? ST[t.Status_Tratativa]||ST.pendente : ST.pendente;
+        const sevCls= n.Severidade==='Alta'?'bs-alta':n.Severidade==='Média'?'bs-media':'bs-baixa';
+        corpo += `
+        <div class="nc-item">
+          <div class="nc-item-id">${n.NC_ID||'–'}</div>
+          <div class="nc-item-top">
+            <div class="nc-item-setor">${SNOMES[n.Setor]||n.Setor||'–'}</div>
+            <div style="display:flex;gap:4px;flex-wrap:wrap">
+              ${n.Severidade?`<span class="badge-sev ${sevCls}">${n.Severidade}</span>`:''}
+              <span class="badge-st" style="background:${stCfg.bg};color:${stCfg.cor}">${stCfg.txt}</span>
+            </div>
+          </div>
+          <div class="nc-item-desc">${n.Descricao||'–'}</div>
+          ${t ? `
+          <div class="trat-blk ${stCfg.cls}">
+            <div class="tbl">📋 Tratativa do Setor</div>
+            <div class="trat-row" style="margin-bottom:6px">
+              <div class="ti">
+                <div class="til">Respondido por</div>
+                <div class="tiv">${t.Respondido_Por||'–'}</div>
+              </div>
+              <div class="ti">
+                <div class="til">Status da Tratativa</div>
+                <div class="tiv"><span style="padding:2px 8px;border-radius:12px;font-size:10px;font-weight:700;background:${stCfg.bg};color:${stCfg.cor}">${stCfg.txt}</span></div>
+              </div>
+            </div>
+            <div class="trat-row" style="margin-bottom:8px">
+              <div class="ti">
+                <div class="til">Data da Resposta</div>
+                <div class="tiv">${t.Data_Resposta?fmtData(t.Data_Resposta):'–'}</div>
+              </div>
+              <div class="ti">
+                <div class="til">Data e Hora (registro)</div>
+                <div class="tiv" style="font-size:11px">${fmtHora(t.Timestamp)}</div>
+              </div>
+              ${t.Prazo?`<div class="ti"><div class="til">Prazo</div><div class="tiv">${fmtData(t.Prazo)}</div></div>`:''}
+            </div>
+            <div class="trat-txt"><strong>Tratativa:</strong> ${t.Tratativa||'–'}</div>
+            ${t.Observacoes?`<div class="trat-txt" style="margin-top:5px"><strong>Observações:</strong> ${t.Observacoes}</div>`:''}
+          </div>`
+          : `<div class="aguard">⏳ Aguardando tratativa do setor responsável</div>`}
+        </div>`;
+      });
+    } else if(nc>0){
+      corpo='<p style="font-size:12px;color:var(--ts);padding:8px 0">Registros enviados. Clique em ↻ Atualizar para carregar detalhes.</p>';
+    } else {
+      corpo='<p style="font-size:12px;color:var(--ts);padding:8px 0">✅ Nenhuma não conformidade registrada neste turno.</p>';
+    }
+
+    return `<div class="hcard">
+      <div class="hhead" onclick="this.nextElementSibling.classList.toggle('open')">
+        <div style="flex:1">
+          <div class="hmeta">${d} · ${r.turno||''} · ${r.unidade}</div>
+          <div class="htitle">${r.supervisor}${nc>0?' · '+nc+' NC(s)':''}</div>
+          <div class="htags">${tags}</div>
+        </div>
+        <span style="color:var(--ts);font-size:16px;flex-shrink:0">▾</span>
+      </div>
+      <div class="hbody">${corpo}</div>
+    </div>`;
+  }).join('');
+}
+
+function novoReg(){
+  procStatus={};
+  ['unidade','supervisor','obsGeral'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  document.querySelector('[onclick*="turno"].selected')?.classList.remove('selected');
+  buildProcs(); go(1);
+}
+function showToast(m,e=false){
+  const t=document.getElementById('toast');
+  t.textContent=m; t.className='toast'+(e?' err':'');
+  t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3500);
+}
+</script>
+</body>
+</html>
